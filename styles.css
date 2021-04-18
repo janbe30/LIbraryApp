@@ -1,0 +1,12 @@
+/* Using BEM convention : Block__Element--modifier */
+#library .library__bookCard {
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 8em;
+  align-items: center;
+}
+
+/*# sourceMappingURL=styles.css.map */

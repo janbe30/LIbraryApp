@@ -1,0 +1,25 @@
+/* Using BEM convention : Block__Element--modifier */
+
+// Colors
+$jetGray: #333333;
+$aeroBlue: #B8F5E8;
+$offWhite: #FCFAF9;
+$silk: #F3D3BD;
+$lightGray: #F3D3BD;
+
+
+#library {
+    .library__bookCard {
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 8em;
+        align-items: center;
+    }
+}
+
+#new-book-form {
+    // display: none;
+}

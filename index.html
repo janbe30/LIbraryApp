@@ -1,9 +1,67 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Library app</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Library App | The Odin Project</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+        <link rel="stylesheet" href="styles.css">
+        <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
     </head>
     <body>
-        <section id="books"></section>
+        <main>
+            <header class="hero is-small is-primary">
+                <div class="hero-body">
+                    <h1 class="title is-1">My Library</h1>
+                </div>
+                
+            </header>
+            <section id="library" class="section"></section>
+            <section id="user-form" class="section">
+                <button class="button is-primary mb-4 modal-button" data-target="modal" aria-haspopup="true">New Book</button>
+                <div class="modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-content">
+                        <form id="new-book-form" class="box">
+                            <h4 class="title is-4">What book would you like to add?</h4>
+                            <div class="field">
+                                <label class="label">Title</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="IT">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Author</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="Stephen King">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Number of Pages</label>
+                                <div class="control">
+                                    <input class="input" type="number" placeholder="1138">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Read?</label>
+                                <div class="control">
+                                    <label class="radio">
+                                        <input type="radio" name="question">
+                                        Yes
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="question">
+                                        Yes
+                                    </label>
+                                </div>
+                            </div>
+                            <button id="add-book-btn" class="button is-primary mt-4 mb-4">Add book to library</button>  
+                        </form>
+                    </div>
+                    <button class="modal-close is-large" aria-label="close"></button>
+                </div>
+            </section>
+        </main>
+        <script src="scripts.js"></script>
     </body>
 </html>
