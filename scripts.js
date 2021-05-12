@@ -1,7 +1,4 @@
-let myLibrary = [
-  {title: 'I Might Regret This', author: 'Liane Moriarty', pages: '356', read: true},
-  {title: 'Big Little Lies', author: 'Abbi Jacobson', pages: '235', read: true}
-]; // Stores book objs
+let myLibrary = {}; // Stores book objs
 
 
 // ES6 class
@@ -20,18 +17,23 @@ class Book {
 }
 
 const addBookToLibrary = (title, author, pages, read) => {
+  const id = `Bk-T${title.length}A${author.length}`;
   let newBook = new Book(title, author, pages, read);
-  myLibrary.push(newBook);
+  if(myLibrary[id] === undefined) {
+    myLibrary[id] = newBook;
+    console.log(myLibrary);
+  }
+ 
 }
 
 const displayBooksFromLibrary = () => {
   let booksContainer = document.querySelector('#library');
-  myLibrary.forEach((book) => {
+  Object.keys(myLibrary).forEach((key) => {
     const bookElem = document.createElement("article");
     bookElem.classList.add('library__bookCard');
-    bookElem.innerHTML=`<h3 class="title is-3">${book.title}</h3> <p><strong>By:</strong> ${book.author}</p> <p>${book.pages} pages`;
+    bookElem.innerHTML=`<h3 class="title is-3">${myLibrary[key].title}</h3> <p><strong>By:</strong> ${myLibrary[key].author}</p> <p>${myLibrary[key].pages} pages`;
     booksContainer.appendChild(bookElem);
-  })
+  });
 }
 
 const openModal = (btn) => {
@@ -42,7 +44,6 @@ const openModal = (btn) => {
   targetElem.classList.add("is-active");
   htmlBody.classList.add("is-clipped");
   closeModal(targetElem,htmlBody);
-  
   addBtn.addEventListener('click', (e) => {
     e.preventDefault();
     getUserInput(targetElem);
@@ -65,22 +66,36 @@ const closeModal = (modal,html) => {
 }
 
 getUserInput = (form) => {
-  /* get all input type 'text', 'number' and 'radio' 
-  *  iterate through the nodelist and if it's not empty add to library obj with the corresponding index.
-  *
-  */
-
  const inputFields = form.querySelectorAll('input[type="text"], input[type="number"], input[type="radio"]');
- console.log(inputFields);
- inputFields.forEach(field => {
-  if(field.value !== ""){
-    // Need to make use of the AddBookToLibrary method. 
+ let savedInputs = {};
+ inputFields.forEach(field => { // Grabs users input from form and saves it in obj
+  let input = '';
+  let id = field.id;
+  if(field.value !== "" && field.type !=='radio' ){
+    input = field.value;
+  } else if(field.type === 'radio' && field.checked) {
+    input = field.checked;
+  } else {
+    return;
   }
+  savedInputs[id] = input;
  });
+ if(Object.keys(savedInputs).length > 0){ // goes through obj and assigns to vars to add to library
+   let title = savedInputs['titleInput'];
+   let author = savedInputs['authorInput'];
+   let pages = savedInputs['pagesInput'] === null? '' : savedInputs['pagesInput'];
+   let read = savedInputs['readYesInput'] || savedInputs['readNoInput'];
+   addBookToLibrary(title,author,pages, read);
+ }
+
 }
 
 // Main functions
 const init = () => {
+  let book1 = ['I Might Regret This','Liane Moriarty','356', true];
+  let book2 = ['Big Little Lies','Abbi Jacobson','235', true];
+  addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
+  addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
   displayBooksFromLibrary();
   let addNewBtn = document.querySelector('button.modal-button'); // May want to group together if more than one listener
   addNewBtn.addEventListener('click', function(e){
