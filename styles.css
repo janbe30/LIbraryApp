@@ -7,6 +7,22 @@
   justify-content: center;
   min-height: 8em;
   align-items: center;
+  position: relative;
+}
+#library .library__bookCard .title.is-3 {
+  max-width: 85%;
+  text-align: center;
+}
+#library .library__bookCard .remove-btn {
+  border: none;
+  position: absolute;
+  top: -0.25em;
+  right: -0.5em;
+  background: transparent;
+  font-size: 1.3em;
+}
+#library #empty-msg {
+  display: none;
 }
 
 /*# sourceMappingURL=styles.css.map */

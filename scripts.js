@@ -1,9 +1,9 @@
-let myLibrary = {}; // Stores book objs
-
+let myLibrary = {}; // Stores book objs - supposed to use array (but how could we look for duplicates?)
 
 // ES6 class
 class Book {
-    constructor(title, author, pages, read){
+    constructor(id, title, author, pages, read){
+        this.id = id;
         this.title = title;
         this.author = author;
         this.pages = pages;
@@ -18,12 +18,26 @@ class Book {
 
 const addBookToLibrary = (title, author, pages, read) => {
   const id = `Bk-T${title.length}A${author.length}`;
-  let newBook = new Book(title, author, pages, read);
+  let newBook = new Book(id,title, author, pages, read);
   if(myLibrary[id] === undefined) {
     myLibrary[id] = newBook;
+    displayNewBook(newBook);
     console.log(myLibrary);
   }
- 
+}
+
+const displayNewBook = (book) => {
+  let booksContainer = document.querySelector('#library');
+  const bookElem = document.createElement('article');
+  bookElem.classList.add('library__bookCard');
+  bookElem.setAttribute('data-index',book.id);
+  bookElem.innerHTML=`<button class="button remove-btn"><i aria-hidden="true" class="fas fa-minus-circle" title="Remove from library"></i></button><h3 class="title is-3">${book.title}</h3> <p><strong>By:</strong> ${book.author}</p>`;
+  if(book.pages !== undefined){
+    let pagesText = document.createElement("p");
+    pagesText.innerHTML =  `${book.pages} pages`;
+    bookElem.appendChild(pagesText);
+  }
+  booksContainer.appendChild(bookElem);
 }
 
 const displayBooksFromLibrary = () => {
@@ -31,9 +45,27 @@ const displayBooksFromLibrary = () => {
   Object.keys(myLibrary).forEach((key) => {
     const bookElem = document.createElement("article");
     bookElem.classList.add('library__bookCard');
-    bookElem.innerHTML=`<h3 class="title is-3">${myLibrary[key].title}</h3> <p><strong>By:</strong> ${myLibrary[key].author}</p> <p>${myLibrary[key].pages} pages`;
+    bookElem.innerHTML=`<h3 class="title is-3">${myLibrary[key].title}</h3> <p><strong>By:</strong> ${myLibrary[key].author}</p>`;
+    if(myLibrary[key].pages !== undefined){
+      let pagesText = document.createElement("p");
+      pagesText.innerHTML =  `${myLibrary[key].pages} pages`;
+      bookElem.appendChild(pagesText);
+    }
     booksContainer.appendChild(bookElem);
   });
+}
+
+const removeBook = (book) => {
+  let bookElem = book.parentElement;
+  let bookIndex = bookElem.dataset.index;
+
+  delete myLibrary[bookIndex];
+  bookElem.remove();
+  
+  if(Object.keys(myLibrary).length <= 0) {
+    let msg = document.getElementById('empty-msg');
+    msg.style.display = 'block';
+  }
 }
 
 const openModal = (btn) => {
@@ -92,16 +124,22 @@ getUserInput = (form) => {
 
 // Main functions
 const init = () => {
-  let book1 = ['I Might Regret This','Liane Moriarty','356', true];
+  // Initialize library with a couple examples (may need to remove after adding local storage functionality)
+  let book1 = ['I Might Regret This','Liane Moriarty', undefined, true];
   let book2 = ['Big Little Lies','Abbi Jacobson','235', true];
   addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
   addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
-  displayBooksFromLibrary();
+  //displayBooksFromLibrary();
   let addNewBtn = document.querySelector('button.modal-button'); // May want to group together if more than one listener
   addNewBtn.addEventListener('click', function(e){
     e.preventDefault();
     openModal(this);
   });
+  let removeBtns = document.querySelectorAll('button.remove-btn');
+  removeBtns.forEach( btn => btn.addEventListener('click', function(e){
+    e.preventDefault();
+    removeBook(this);
+  }));
 }
 
 window.addEventListener("load", () => {

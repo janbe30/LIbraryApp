@@ -17,6 +17,25 @@ $lightGray: #F3D3BD;
         justify-content: center;
         min-height: 8em;
         align-items: center;
+        position: relative;
+
+        .title.is-3 {
+            max-width: 85%;
+            text-align: center;
+        }
+
+        .remove-btn {
+            border: none;
+            position: absolute;
+            top: -.25em;
+            right: -.5em;
+            background: transparent;
+            font-size: 1.3em;
+        }
+    }
+
+    #empty-msg {
+        display: none;
     }
 }
 
