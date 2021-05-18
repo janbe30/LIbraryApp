@@ -14,6 +14,10 @@ class Book {
         let readStatus = this.read === true? 'read' : 'not read yet';
         return `${this.title} by ${this.author}, ${this.pages} pages, ${readStatus}`;
     }
+
+    changeReadStatus() {
+      this.read = this.read === true? 'Read' : 'Not read yet';
+    }
 }
 
 const addBookToLibrary = (title, author, pages, read) => {
@@ -22,6 +26,7 @@ const addBookToLibrary = (title, author, pages, read) => {
   if(myLibrary[id] === undefined) {
     myLibrary[id] = newBook;
     displayNewBook(newBook);
+    toggleEmptyMessage();
     console.log(myLibrary);
   }
 }
@@ -38,6 +43,7 @@ const displayNewBook = (book) => {
     bookElem.appendChild(pagesText);
   }
   booksContainer.appendChild(bookElem);
+  activateListeners();
 }
 
 const displayBooksFromLibrary = () => {
@@ -58,14 +64,11 @@ const displayBooksFromLibrary = () => {
 const removeBook = (book) => {
   let bookElem = book.parentElement;
   let bookIndex = bookElem.dataset.index;
-
+console.log('removing book...');
   delete myLibrary[bookIndex];
   bookElem.remove();
-  
-  if(Object.keys(myLibrary).length <= 0) {
-    let msg = document.getElementById('empty-msg');
-    msg.style.display = 'block';
-  }
+  console.log(myLibrary);
+  toggleEmptyMessage();
 }
 
 const openModal = (btn) => {
@@ -97,6 +100,15 @@ const closeModal = (modal,html) => {
   });
 }
 
+toggleEmptyMessage = () => {
+  let msg = document.getElementById('empty-msg');
+  if(Object.keys(myLibrary).length <= 0) {
+    msg.style.display = 'block';
+  } else {
+    msg.style.display = 'none';
+  }
+}
+
 getUserInput = (form) => {
  const inputFields = form.querySelectorAll('input[type="text"], input[type="number"], input[type="radio"]');
  let savedInputs = {};
@@ -122,28 +134,33 @@ getUserInput = (form) => {
 
 }
 
-// Main functions
-const init = () => {
-  // Initialize library with a couple examples (may need to remove after adding local storage functionality)
-  let book1 = ['I Might Regret This','Liane Moriarty', undefined, true];
-  let book2 = ['Big Little Lies','Abbi Jacobson','235', true];
-  addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
-  addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
-  //displayBooksFromLibrary();
-  let addNewBtn = document.querySelector('button.modal-button'); // May want to group together if more than one listener
+const activateListeners = () => {
+  let addNewBtn = document.querySelector('button.modal-button'); 
+  let removeBtns = document.querySelectorAll('button.remove-btn');
   addNewBtn.addEventListener('click', function(e){
     e.preventDefault();
     openModal(this);
   });
-  let removeBtns = document.querySelectorAll('button.remove-btn');
   removeBtns.forEach( btn => btn.addEventListener('click', function(e){
     e.preventDefault();
     removeBook(this);
   }));
 }
 
+// Main functions
+const init = () => {
+  // Initialize library with a couple examples (may need to remove after adding local storage functionality)
+  let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
+  let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
+  addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
+  addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
+  //displayBooksFromLibrary();
+  
+}
+
 window.addEventListener("load", () => {
   init();
+  activateListeners();
 });
 
 
@@ -167,3 +184,14 @@ window.addEventListener("load", () => {
 // function addBookToLibrary() {
 
 // }
+
+
+// TO-DO:
+
+/* 
+1. Refine the design - specifically add Read/Not Read function
+2. Form validation 
+3. Add read/not read function
+4. Local storage functionality
+
+*/
