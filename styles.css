@@ -24,22 +24,35 @@ main {
   font-family: "Fjalla One", sans-serif;
 }
 
-.message.is-dark {
-  border-color: #333333;
-}
 .message.is-dark .message-body {
   border-radius: 0;
   color: #333333;
+  border-color: #333333;
+  background: #fff;
+  font-size: 1.2rem;
 }
 
+/*
+    background: transparent, border: silk (fills side by side) 
+    would be cool to pop in a book icon on the right-hand side
+*/
 .button.is-primary {
   background-color: #F3D3BD;
   border-color: transparent;
   color: #333333;
   font-family: "Lato", sans-serif;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
   margin-left: 0.5em;
+  transition: all 1ms ease-in-out;
+}
+.button.is-primary:hover, .button.is-primary:focus, .button.is-primary:active {
+  background-color: transparent;
+  border: 2px solid #F3D3BD;
+  color: #333333;
+}
+.button.is-primary:focus:not(:active) {
+  box-shadow: 0 0 0 0.125em rgba(243, 211, 189, 0.25);
 }
 
 .hero.is-primary {
@@ -77,6 +90,7 @@ main {
 #library .library__bookCard {
   border: 1px solid rgba(51, 51, 51, 0.4);
   border-left: 6px solid #333333;
+  box-shadow: 0px 7px 16px -2px rgba(51, 51, 51, 0.66);
   background: #fff;
   border-radius: 0 0.5em 0.5em 0;
   display: flex;
@@ -85,8 +99,8 @@ main {
   min-height: 12em;
   align-items: center;
   position: relative;
-  width: 9em;
-  padding: 0.25em 0.1em 0.25em 0.3em;
+  width: 9.5em;
+  padding: 0.25em 0.1em 2.7em 0.3em;
   margin: 5px 10px;
 }
 #library .library__bookCard .title.is-3 {
@@ -94,14 +108,46 @@ main {
   text-align: center;
   font-size: 1.5rem;
 }
+@media (min-width: 768px) {
+  #library .library__bookCard .title.is-3 {
+    font-size: 1.4rem;
+  }
+}
 #library .library__bookCard .remove-btn {
   border: none;
   position: absolute;
-  top: -0.5em;
-  right: -0.75em;
-  background: transparent;
-  font-size: 1.3em;
+  top: -0.25em;
+  left: -0.4em;
+  background: #fff;
+  height: auto;
+  border-radius: 100%;
+  font-size: 1.5em;
+  padding: 0;
   color: #B8F5E8;
+}
+#library .library__bookCard .read-btn {
+  text-transform: capitalize;
+  background-color: #B8F5E8;
+  color: #333;
+  font-weight: 600;
+  padding: 7px 14px;
+  border: 1px solid #B8F5E8;
+  border-bottom: 2px solid #ccc;
+  line-height: 1;
+  height: auto;
+  margin: 0.4em 0 0.2em;
+  position: absolute;
+  bottom: 0;
+}
+@media (min-width: 768px) {
+  #library .library__bookCard .read-btn {
+    bottom: 0.25em;
+  }
+}
+@media (min-width: 768px) {
+  #library .library__bookCard {
+    padding-bottom: 3em;
+  }
 }
 #library #empty-msg {
   display: none;

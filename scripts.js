@@ -11,12 +11,13 @@ class Book {
     }
 
     info() {
-        let readStatus = this.read === true? 'read' : 'not read yet';
+        let readStatus = this.read === true? 'read' : 'not read';
         return `${this.title} by ${this.author}, ${this.pages} pages, ${readStatus}`;
     }
 
     changeReadStatus() {
-      this.read = this.read === true? 'Read' : 'Not read yet';
+      if(this.read === true || this.read === 'Read')  this.read = 'Not read'; 
+      else if(this.read === false || this.read === 'Not read')  this.read = 'Read';
     }
 }
 
@@ -36,11 +37,19 @@ const displayNewBook = (book) => {
   const bookElem = document.createElement('article');
   bookElem.classList.add('library__bookCard');
   bookElem.setAttribute('data-index',book.id);
-  bookElem.innerHTML=`<button class="button remove-btn"><i aria-hidden="true" class="fas fa-minus-circle" title="Remove from library"></i></button><h3 class="title is-3">${book.title}</h3> <p><strong>By:</strong> ${book.author}</p>`;
-  if(book.pages !== undefined){
+  bookElem.innerHTML=`<button class="button remove-btn"><i aria-hidden="true" class="fas fa-minus-circle" title="Remove from library"></i></button><h3 class="title is-3">${book.title}</h3> <p>${book.author}</p>`;
+  if(book.pages !== undefined){ 
     let pagesText = document.createElement("p");
     pagesText.innerHTML =  `${book.pages} pages`;
     bookElem.appendChild(pagesText);
+  }
+  if(book.read !== undefined){
+    let readStatus = book.read === true? 'read' : 'not read';
+    let readBtn = document.createElement("button");
+    readBtn.classList.add('button');
+    readBtn.classList.add('read-btn');
+    readBtn.innerHTML = readStatus;
+    bookElem.appendChild(readBtn);
   }
   booksContainer.appendChild(bookElem);
   activateListeners();
@@ -64,11 +73,18 @@ const displayBooksFromLibrary = () => {
 const removeBook = (book) => {
   let bookElem = book.parentElement;
   let bookIndex = bookElem.dataset.index;
-console.log('removing book...');
   delete myLibrary[bookIndex];
   bookElem.remove();
-  console.log(myLibrary);
   toggleEmptyMessage();
+}
+
+const changeBookStatus = (book) => {  // TODO: Fix bug - function running multiple times when book is already in library at load time
+  let bookElem = book.parentElement;
+  let bookIndex = bookElem.dataset.index;
+  myLibrary[bookIndex].changeReadStatus();
+  let readStatus = myLibrary[bookIndex].read;
+  console.log(myLibrary[bookIndex]);
+  bookElem.querySelector('.read-btn').innerHTML = readStatus;
 }
 
 const openModal = (btn) => {
@@ -128,7 +144,7 @@ getUserInput = (form) => {
    let title = savedInputs['titleInput'];
    let author = savedInputs['authorInput'];
    let pages = savedInputs['pagesInput'] === null? '' : savedInputs['pagesInput'];
-   let read = savedInputs['readYesInput'] || savedInputs['readNoInput'];
+   let read = savedInputs['readYesInput']? true : false;
    addBookToLibrary(title,author,pages, read);
  }
 
@@ -137,6 +153,7 @@ getUserInput = (form) => {
 const activateListeners = () => {
   let addNewBtn = document.querySelector('button.modal-button'); 
   let removeBtns = document.querySelectorAll('button.remove-btn');
+  let readBtns = document.querySelectorAll('button.read-btn');
   addNewBtn.addEventListener('click', function(e){
     e.preventDefault();
     openModal(this);
@@ -145,17 +162,21 @@ const activateListeners = () => {
     e.preventDefault();
     removeBook(this);
   }));
+  readBtns.forEach( btn => btn.addEventListener('click', function(e){ 
+    e.preventDefault();
+    changeBookStatus(this);
+  }));
 }
 
 // Main functions
 const init = () => {
   // Initialize library with a couple examples (may need to remove after adding local storage functionality)
-  let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
-  let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
-  addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
-  addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
+  // let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
+  // let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
+  // addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
+  // addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
   //displayBooksFromLibrary();
-  
+  toggleEmptyMessage();
 }
 
 window.addEventListener("load", () => {
@@ -189,9 +210,10 @@ window.addEventListener("load", () => {
 // TO-DO:
 
 /* 
-1. Refine the design - specifically add Read/Not Read function
-2. Form validation 
-3. Add read/not read function
+1. Refine the design - specifically add Read/Not Read function  : DONE
+2. Form validation, close form when book is added
+3. Add read/not read function : DONE
 4. Local storage functionality
+5. Fix any quirks/bugs
 
 */

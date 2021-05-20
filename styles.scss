@@ -46,25 +46,42 @@ main {
 }
 
 .message.is-dark {
-    border-color: $jetGray;
-
     .message-body { 
         border-radius: 0;
         color: $jetGray;
+        border-color: $jetGray;
+        background: #fff;
+        font-size: 1.2rem;
     }
 }
 
 // Links and buttons
+// TODO : Add animation for hover/focus
+/*
+    background: transparent, border: silk (fills side by side) 
+    would be cool to pop in a book icon on the right-hand side
+*/
 .button.is-primary {
     background-color: $silk;
     border-color: transparent;
     color: $jetGray;
     font-family: 'Lato', sans-serif;
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: 600;
     margin-left: 0.5em;   
-    
+    transition: all 1ms ease-in-out;
+    &:hover, &:focus, &:active {
+        background-color: transparent;
+        border: 2px solid $silk;
+        color: $jetGray;
+        
+    }
+    &:focus:not(:active){
+        box-shadow: 0 0 0 0.125em rgb(243 211 189 / 25%);
+    }
 }
+
+
 
 // Hero
 .hero.is-primary {
@@ -100,6 +117,7 @@ main {
     .library__bookCard {
         border: 1px solid rgba(51,51,51, .4);
         border-left: 6px solid $jetGray;
+        box-shadow: 0px 7px 16px -2px rgba(51,51,51,0.66);
         background: #fff;
         border-radius: 0 0.5em 0.5em 0;
         display: flex;
@@ -108,24 +126,54 @@ main {
         min-height: 12em;
         align-items: center;
         position: relative;
-        width: 9em;
-        padding: 0.25em 0.1em 0.25em 0.3em;
+        width: 9.5em;
+        padding: 0.25em 0.1em 2.7em 0.3em;
         margin: 5px 10px;
 
         .title.is-3 {
             max-width: 90%;
             text-align: center;
             font-size: 1.5rem;
+
+            @include breakpoint(med-screen){
+                font-size: 1.4rem;
+            }
         }
 
         .remove-btn {
             border: none;
             position: absolute;
-            top: -0.5em;
-            right: -0.75em;
-            background: transparent;
-            font-size: 1.3em;
+            top: -0.25em;
+            left: -0.4em;
+            background: #fff;
+            height: auto;
+            border-radius: 100%;
+            font-size: 1.5em;
+            padding: 0;
             color: $aeroBlue;
+        }
+
+        .read-btn {
+            text-transform: capitalize;
+            background-color: #B8F5E8;
+            color: #333;
+            font-weight: 600;
+            padding: 7px 14px;
+            border: 1px solid #B8F5E8;
+            border-bottom: 2px solid #ccc;
+            line-height: 1;
+            height: auto;
+            margin: 0.4em 0 .2em;
+            position: absolute;
+            bottom: 0;
+
+            @include breakpoint(med-screen){
+                bottom: 0.25em;
+            }
+        }
+
+        @include breakpoint(med-screen){
+            padding-bottom: 3em;
         }
     }
 
