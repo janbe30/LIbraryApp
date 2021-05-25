@@ -79,6 +79,9 @@ main {
     &:focus:not(:active){
         box-shadow: 0 0 0 0.125em rgb(243 211 189 / 25%);
     }
+    &[disabled] {
+        background-color: #f3d3bd;
+    }
 }
 
 
@@ -187,9 +190,27 @@ main {
     background-color: rgba(51,51,51,.86);
 }
 
+// Form
 .box {
     background-color:$offWhite;
     color: #333;
+    
+    .input {
+        position: relative;
+    }
+
+    .input.is-danger+span::before {
+        content: "This field is required";
+        color: #f14668;
+        position: absolute;
+        right: 1em;
+        top: 20%;
+    }
+}
+
+#req-fields-label {
+    float: right;
+    font-size: .95em;
 }
 
 #new-book-form {

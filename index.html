@@ -32,17 +32,20 @@
                     <div class="modal-background"></div>
                     <div class="modal-content">
                         <form id="new-book-form" class="box">
+                            <p id="req-fields-label"><em>* Required fields</em></p>
                             <h4 class="title is-4">What book would you like to add?</h4>
                             <div class="field">
-                                <label class="label">Title</label>
+                                <label class="label">Title<sup>*</sup></label>
                                 <div class="control">
                                     <input required class="input" type="text" placeholder="IT" id="titleInput">
+                                    <span></span>
                                 </div>
                             </div>
                             <div class="field">
-                                <label class="label">Author</label>
+                                <label class="label">Author<sup>*</sup></label>
                                 <div class="control">
                                     <input required class="input" type="text" placeholder="Stephen King" id="authorInput">
+                                    <span></span>
                                 </div>
                             </div>
                             <div class="field">

@@ -94,15 +94,20 @@ const openModal = (btn) => {
   let addBtn = document.getElementById('add-book-btn');
   targetElem.classList.add("is-active");
   htmlBody.classList.add("is-clipped");
-  closeModal(targetElem,htmlBody);
+  closeModal(targetElem);
+  
+  
   addBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    getUserInput(targetElem);
+    getUserInput(targetElem).then(function(){
+      closeModal(targetElem);
+    });
   });
   
 }
 
-const closeModal = (modal,html) => {
+const closeModal = (modal) => {
+  let html = document.querySelector('html');
   let closeBtn = modal.querySelector("button.modal-close");
   closeBtn.addEventListener('click', () => { // close modal if 'close' button is clicked
     modal.classList.remove("is-active");
@@ -116,6 +121,71 @@ const closeModal = (modal,html) => {
   });
 }
 
+const liveValidation = (field) => {
+  if(field.classList.contains('is-danger')) field.classList.remove('is-danger'); 
+// TODO: Add 'live' validation so 'Add btn' becomes enabled
+    // title.addEventListener('input',countChars); // Using () will execute the fn and return its value. without it will fetch the function (reference it)
+  // author.addEventListener('input',countChars);
+  // if(title.dataset.valid === 'true' && author.dataset.valid === 'true') {
+  //   console.log('req fields are valid now')
+  // }
+}
+
+const validateFormInput = () => {
+  let requiredFields = document.querySelectorAll('input[required]');
+  let flag = true;
+  requiredFields.forEach( field => {
+    if(field.value.length <= 0) { 
+      flag = false;
+      field.classList.add('is-danger');
+    } 
+  });
+
+  return flag;
+}
+
+const countChars = (e) => {
+  let field = e.currentTarget;
+  let currentInput = e.currentTarget.value;
+  if(currentInput.length >= 2) {
+    field.dataset.valid = 'true'; 
+  } else {
+    field.dataset.valid = 'false';
+  }
+  return;
+}
+
+getUserInput = (form) => {
+  return new Promise(function(resolve, reject) { 
+    let validForm = validateFormInput();
+    if(validForm){
+      console.log('form is valid');
+      const inputFields = form.querySelectorAll('input[type="text"], input[type="number"], input[type="radio"]');
+      let savedInputs = {};
+      inputFields.forEach(field => { // Grabs users input from form and saves it in obj
+        let input = '';
+        let id = field.id;
+        if(field.value !== "" && field.type !=='radio' ){
+          input = field.value;
+        } else if(field.type === 'radio' && field.checked) {
+          input = field.checked;
+        } else {
+          return;
+        }
+        savedInputs[id] = input;
+      });
+      if(Object.keys(savedInputs).length > 0){ // goes through obj and assigns to vars to add to library
+        let title = savedInputs['titleInput'];
+        let author = savedInputs['authorInput'];
+        let pages = savedInputs['pagesInput'] === null? '' : savedInputs['pagesInput'];
+        let read = savedInputs['readYesInput']? true : false;
+        addBookToLibrary(title,author,pages, read);
+        resolve();
+      }
+    } 
+  });  
+}
+
 toggleEmptyMessage = () => {
   let msg = document.getElementById('empty-msg');
   if(Object.keys(myLibrary).length <= 0) {
@@ -125,35 +195,12 @@ toggleEmptyMessage = () => {
   }
 }
 
-getUserInput = (form) => {
- const inputFields = form.querySelectorAll('input[type="text"], input[type="number"], input[type="radio"]');
- let savedInputs = {};
- inputFields.forEach(field => { // Grabs users input from form and saves it in obj
-  let input = '';
-  let id = field.id;
-  if(field.value !== "" && field.type !=='radio' ){
-    input = field.value;
-  } else if(field.type === 'radio' && field.checked) {
-    input = field.checked;
-  } else {
-    return;
-  }
-  savedInputs[id] = input;
- });
- if(Object.keys(savedInputs).length > 0){ // goes through obj and assigns to vars to add to library
-   let title = savedInputs['titleInput'];
-   let author = savedInputs['authorInput'];
-   let pages = savedInputs['pagesInput'] === null? '' : savedInputs['pagesInput'];
-   let read = savedInputs['readYesInput']? true : false;
-   addBookToLibrary(title,author,pages, read);
- }
-
-}
-
 const activateListeners = () => {
   let addNewBtn = document.querySelector('button.modal-button'); 
   let removeBtns = document.querySelectorAll('button.remove-btn');
   let readBtns = document.querySelectorAll('button.read-btn');
+  let requiredFields = document.querySelectorAll('input[required]');
+
   addNewBtn.addEventListener('click', function(e){
     e.preventDefault();
     openModal(this);
@@ -162,17 +209,20 @@ const activateListeners = () => {
     e.preventDefault();
     removeBook(this);
   }));
-  readBtns.forEach( btn => btn.addEventListener('click', function(e){ 
+  readBtns.forEach( btn => { 
+    btn.addEventListener('click', function(e){ 
     e.preventDefault();
     changeBookStatus(this);
-  }));
+    });
+  });
+  requiredFields.forEach(field => field.addEventListener('input', () => liveValidation(field)));
 }
 
 // Main functions
 const init = () => {
   // Initialize library with a couple examples (may need to remove after adding local storage functionality)
-  // let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
-  // let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
+  let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
+  let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
   // addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
   // addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
   //displayBooksFromLibrary();
@@ -212,6 +262,7 @@ window.addEventListener("load", () => {
 /* 
 1. Refine the design - specifically add Read/Not Read function  : DONE
 2. Form validation, close form when book is added
+    ** After form is validated, close modal if everything looks good
 3. Add read/not read function : DONE
 4. Local storage functionality
 5. Fix any quirks/bugs
