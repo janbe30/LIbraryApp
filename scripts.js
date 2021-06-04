@@ -96,11 +96,12 @@ const openModal = (btn) => {
   htmlBody.classList.add("is-clipped");
   closeModal(targetElem);
   
-  
   addBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    getUserInput(targetElem).then(function(){
-      closeModal(targetElem);
+    getUserInput(targetElem, function(){
+      let form = document.getElementById('new-book-form');
+      form.reset(); 
+      closingModalProps(targetElem, htmlBody);
     });
   });
   
@@ -110,21 +111,25 @@ const closeModal = (modal) => {
   let html = document.querySelector('html');
   let closeBtn = modal.querySelector("button.modal-close");
   closeBtn.addEventListener('click', () => { // close modal if 'close' button is clicked
-    modal.classList.remove("is-active");
-    html.classList.remove("is-clipped");
+    closingModalProps(modal, html);
   });
   document.addEventListener('click', e => {
     if(e.target.classList.contains('modal-background')){ // close modal if user clicks on the background 
-      modal.classList.remove("is-active");
-      html.classList.remove("is-clipped");
+      closingModalProps(modal, html);
     }
   });
 }
 
-const liveValidation = (field) => {
-  if(field.classList.contains('is-danger')) field.classList.remove('is-danger'); 
-// TODO: Add 'live' validation so 'Add btn' becomes enabled
-    // title.addEventListener('input',countChars); // Using () will execute the fn and return its value. without it will fetch the function (reference it)
+const closingModalProps = (modal, html) => {
+  modal.classList.remove("is-active");
+  html.classList.remove("is-clipped");
+}
+
+function liveValidation(field) {
+  if (field.classList.contains('is-danger'))
+    field.classList.remove('is-danger');
+  // TODO: Add 'live' validation so 'Add btn' becomes enabled
+  // title.addEventListener('input',countChars); // Using () will execute the fn and return its value. without it will fetch the function (reference it)
   // author.addEventListener('input',countChars);
   // if(title.dataset.valid === 'true' && author.dataset.valid === 'true') {
   //   console.log('req fields are valid now')
@@ -155,35 +160,33 @@ const countChars = (e) => {
   return;
 }
 
-getUserInput = (form) => {
-  return new Promise(function(resolve, reject) { 
-    let validForm = validateFormInput();
-    if(validForm){
-      console.log('form is valid');
-      const inputFields = form.querySelectorAll('input[type="text"], input[type="number"], input[type="radio"]');
-      let savedInputs = {};
-      inputFields.forEach(field => { // Grabs users input from form and saves it in obj
-        let input = '';
-        let id = field.id;
-        if(field.value !== "" && field.type !=='radio' ){
-          input = field.value;
-        } else if(field.type === 'radio' && field.checked) {
-          input = field.checked;
-        } else {
-          return;
-        }
-        savedInputs[id] = input;
-      });
-      if(Object.keys(savedInputs).length > 0){ // goes through obj and assigns to vars to add to library
-        let title = savedInputs['titleInput'];
-        let author = savedInputs['authorInput'];
-        let pages = savedInputs['pagesInput'] === null? '' : savedInputs['pagesInput'];
-        let read = savedInputs['readYesInput']? true : false;
-        addBookToLibrary(title,author,pages, read);
-        resolve();
+getUserInput = (form, callback) => {
+  let validForm = validateFormInput();
+  if(validForm){
+    console.log('form is valid');
+    const inputFields = form.querySelectorAll('input[type="text"], input[type="number"], input[type="radio"]');
+    let savedInputs = {};
+    inputFields.forEach(field => { // Grabs users input from form and saves it in obj
+      let input = '';
+      let id = field.id;
+      if(field.value !== "" && field.type !=='radio' ){
+        input = field.value;
+      } else if(field.type === 'radio' && field.checked) {
+        input = field.checked;
+      } else {
+        return;
       }
-    } 
-  });  
+      savedInputs[id] = input;
+    });
+    if(Object.keys(savedInputs).length > 0){ // goes through obj and assigns to vars to add to library
+      let title = savedInputs['titleInput'];
+      let author = savedInputs['authorInput'];
+      let pages = savedInputs['pagesInput'] === null? '' : savedInputs['pagesInput'];
+      let read = savedInputs['readYesInput']? true : false;
+      addBookToLibrary(title,author,pages, read);
+    }
+  }
+  callback();
 }
 
 toggleEmptyMessage = () => {
