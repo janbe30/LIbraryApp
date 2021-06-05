@@ -1,4 +1,5 @@
 let myLibrary = {}; // Stores book objs - supposed to use array (but how could we look for duplicates?)
+let storage = false;
 
 // ES6 class
 class Book {
@@ -26,6 +27,9 @@ const addBookToLibrary = (title, author, pages, read) => {
   let newBook = new Book(id,title, author, pages, read);
   if(myLibrary[id] === undefined) {
     myLibrary[id] = newBook;
+    if(storage) {
+      storeBookLocally(newBook);
+    }
     displayNewBook(newBook);
     toggleEmptyMessage();
     console.log(myLibrary);
@@ -224,8 +228,8 @@ const activateListeners = () => {
 // Main functions
 const init = () => {
   // Initialize library with a couple examples (may need to remove after adding local storage functionality)
-  let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
-  let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
+  // let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
+  // let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
   // addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
   // addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
   //displayBooksFromLibrary();
@@ -235,7 +239,64 @@ const init = () => {
 window.addEventListener("load", () => {
   init();
   activateListeners();
+  checkforStorage();
 });
+
+// Web Storage
+const storageAvailable = function(type) {
+  let storage;
+  try {
+      storage = window[type];
+      let x = '__storage_test__';
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+  }
+  catch(e) {
+    return e instanceof DOMException && (
+        // everything except Firefox
+        e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === 'QuotaExceededError' ||
+        // Firefox
+        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+        // acknowledge QuotaExceededError only if there's something already stored
+        (storage && storage.length !== 0);
+  }
+}
+
+const checkforStorage = function() {
+  if(storageAvailable('localStorage')) {
+    console.log('local storage can be used!');
+    storage = true;
+    if(localStorage.length > 0) { 
+      console.log('Display books from storage'); 
+      getBooksFromStorage();
+    }
+
+  } else {
+    console.log('No local storage :(');
+  }
+}
+
+const storeBookLocally = function(book){
+  let book_serialized = JSON.stringify(book);
+  localStorage.setItem(book.id, book_serialized);
+  //console.log(localStorage.getItem(book.id)); // get book in string format
+}
+
+const getBooksFromStorage = function(){
+  let bookObj;
+  for(let [key,value] of Object.entries(localStorage)){
+    let bookObj = JSON.parse(localStorage.getItem(key));
+    console.log(`Value from storage: ${value}`);
+    console.log(bookObj); //
+    displayNewBook(bookObj);
+  }
+}
 
 
 
