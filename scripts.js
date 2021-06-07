@@ -77,6 +77,7 @@ const displayBooksFromLibrary = () => {
 const removeBook = (book) => {
   let bookElem = book.parentElement;
   let bookIndex = bookElem.dataset.index;
+  localStorage.removeItem(bookIndex);
   delete myLibrary[bookIndex];
   bookElem.remove();
   toggleEmptyMessage();
@@ -284,7 +285,12 @@ const checkforStorage = function() {
 
 const storeBookLocally = function(book){
   let book_serialized = JSON.stringify(book);
-  localStorage.setItem(book.id, book_serialized);
+  if(localStorage.getItem(book.id) === null){
+    localStorage.setItem(book.id, book_serialized); 
+  } else {
+    console.log('book already exists in storage');
+  }
+    
   //console.log(localStorage.getItem(book.id)); // get book in string format
 }
 
@@ -292,9 +298,7 @@ const getBooksFromStorage = function(){
   let bookObj;
   for(let [key,value] of Object.entries(localStorage)){
     let bookObj = JSON.parse(localStorage.getItem(key));
-    console.log(`Value from storage: ${value}`);
-    console.log(bookObj); //
-    displayNewBook(bookObj);
+    addBookToLibrary(bookObj.title, bookObj.author, bookObj.pages, bookObj.read);
   }
 }
 
