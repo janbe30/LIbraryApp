@@ -32,7 +32,6 @@ const addBookToLibrary = (title, author, pages, read) => {
     }
     displayNewBook(newBook);
     toggleEmptyMessage();
-    console.log(myLibrary);
   }
 }
 
@@ -88,7 +87,6 @@ const changeBookStatus = (book) => {  // TODO: Fix bug - function running multip
   let bookIndex = bookElem.dataset.index;
   myLibrary[bookIndex].changeReadStatus();
   let readStatus = myLibrary[bookIndex].read;
-  console.log(myLibrary[bookIndex]);
   bookElem.querySelector('.read-btn').innerHTML = readStatus;
 }
 
@@ -130,16 +128,34 @@ const closingModalProps = (modal, html) => {
   html.classList.remove("is-clipped");
 }
 
-function liveValidation(field) {
-  if (field.classList.contains('is-danger'))
-    field.classList.remove('is-danger');
-  // TODO: Add 'live' validation so 'Add btn' becomes enabled
-  // title.addEventListener('input',countChars); // Using () will execute the fn and return its value. without it will fetch the function (reference it)
-  // author.addEventListener('input',countChars);
-  // if(title.dataset.valid === 'true' && author.dataset.valid === 'true') {
-  //   console.log('req fields are valid now')
-  // }
-}
+/*
+* TODO: Add 'live' validation so 'Add btn' becomes enabled
+* Listener activated when modal is open. The button will be disabled to begin with. 
+* Listener on required fields will check for input, if the text is >= 2 the button will be enabled. If < 2, the button will be disabled.
+*/  
+
+// function liveValidation(field) {
+//   if (field.classList.contains('is-danger'))
+//     field.classList.remove('is-danger');
+
+//   // title.addEventListener('input',countChars); // Using () will execute the fn and return its value. without it will fetch the function (reference it)
+//   // author.addEventListener('input',countChars);
+//   // if(title.dataset.valid === 'true' && author.dataset.valid === 'true') {
+//   //   console.log('req fields are valid now')
+//   // }
+// }
+
+/* Helper Fn for liveValidation */
+// const countChars = (e) => {
+//   let field = e.currentTarget;
+//   let currentInput = e.currentTarget.value;
+//   if(currentInput.length >= 2) {
+//     field.dataset.valid = 'true'; 
+//   } else {
+//     field.dataset.valid = 'false';
+//   }
+//   return;
+// }
 
 const validateFormInput = () => {
   let requiredFields = document.querySelectorAll('input[required]');
@@ -154,21 +170,9 @@ const validateFormInput = () => {
   return flag;
 }
 
-const countChars = (e) => {
-  let field = e.currentTarget;
-  let currentInput = e.currentTarget.value;
-  if(currentInput.length >= 2) {
-    field.dataset.valid = 'true'; 
-  } else {
-    field.dataset.valid = 'false';
-  }
-  return;
-}
-
 getUserInput = (form, callback) => {
   let validForm = validateFormInput();
   if(validForm){
-    console.log('form is valid');
     const inputFields = form.querySelectorAll('input[type="text"], input[type="number"], input[type="radio"]');
     let savedInputs = {};
     inputFields.forEach(field => { // Grabs users input from form and saves it in obj
@@ -190,7 +194,7 @@ getUserInput = (form, callback) => {
       let read = savedInputs['readYesInput']? true : false;
       addBookToLibrary(title,author,pages, read);
     }
-  }
+  } else { return; }
   callback();
 }
 
@@ -228,19 +232,13 @@ const activateListeners = () => {
 
 // Main functions
 const init = () => {
-  // Initialize library with a couple examples (may need to remove after adding local storage functionality)
-  // let book1 = ['I Might Regret This','Abbi Jacobson','235', true];
-  // let book2 = ['Big Little Lies','Liane Moriarty', undefined, true];
-  // addBookToLibrary(book1[0],book1[1],book1[2],book1[3]);
-  // addBookToLibrary(book2[0],book2[1],book2[2],book2[3]);
-  //displayBooksFromLibrary();
   toggleEmptyMessage();
+  activateListeners();
+  checkforStorage();
 }
 
 window.addEventListener("load", () => {
   init();
-  activateListeners();
-  checkforStorage();
 });
 
 // Web Storage
@@ -271,33 +269,25 @@ const storageAvailable = function(type) {
 
 const checkforStorage = function() {
   if(storageAvailable('localStorage')) {
-    console.log('local storage can be used!');
     storage = true;
     if(localStorage.length > 0) { 
-      console.log('Display books from storage'); 
       getBooksFromStorage();
     }
-
-  } else {
-    console.log('No local storage :(');
-  }
+  } 
 }
 
 const storeBookLocally = function(book){
   let book_serialized = JSON.stringify(book);
   if(localStorage.getItem(book.id) === null){
     localStorage.setItem(book.id, book_serialized); 
-  } else {
-    console.log('book already exists in storage');
-  }
-    
+  } 
   //console.log(localStorage.getItem(book.id)); // get book in string format
 }
 
 const getBooksFromStorage = function(){
   let bookObj;
   for(let [key,value] of Object.entries(localStorage)){
-    let bookObj = JSON.parse(localStorage.getItem(key));
+    bookObj = JSON.parse(localStorage.getItem(key));
     addBookToLibrary(bookObj.title, bookObj.author, bookObj.pages, bookObj.read);
   }
 }
@@ -323,16 +313,3 @@ const getBooksFromStorage = function(){
 // function addBookToLibrary() {
 
 // }
-
-
-// TO-DO:
-
-/* 
-1. Refine the design - specifically add Read/Not Read function  : DONE
-2. Form validation, close form when book is added
-    ** After form is validated, close modal if everything looks good
-3. Add read/not read function : DONE
-4. Local storage functionality
-5. Fix any quirks/bugs
-
-*/
